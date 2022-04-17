@@ -38,18 +38,19 @@ void generate_rects(int N, std::vector <eod::ExtendedObjectInfo> &rects){
 }
 
 int main(int argc, char **argv){
-    if( argc < 5){
-        printf("Wrong usage!\nUsage: ./bb_matching min_rects max_rects n_tries path_to_results\nExample: ./bb_matching 10 100 5 ../../data/bb_matching_10_100.csv\n");
+    if( argc < 6){
+        printf("Wrong usage!\nUsage: ./bb_matching min_rects max_rects step n_tries path_to_results\nExample: ./bb_matching 10 100 5 ../../data/bb_matching_10_100.csv\n");
         return -1;
     }    
     int min_rects = std::atoi(argv[1]);
     int max_rects = std::atoi(argv[2]);    
-    int n_tries = std::atoi(argv[3]);
+    int step = std::atoi(argv[3]);
+    int n_tries = std::atoi(argv[4]);
     int iou_threshold_d = 0.75;
     
     std::ofstream results_file;
-    //std::string = argv[4]
-    results_file.open (argv[4]);
+    std::string filename = argv[5];
+    results_file.open(filename);
     
     results_file << "RectsA,RectsB";
     for(int n = 0 ; n < n_tries ; n++)
@@ -62,8 +63,8 @@ int main(int argc, char **argv){
     
     std::vector<eod::ExtendedObjectInfo> rectsA;
     std::vector<eod::ExtendedObjectInfo> rectsB;
-    for( int i = min_rects ; i < max_rects ; i++){
-        for( int j = min_rects ; j < max_rects ; j++){
+    for( int i = min_rects ; i < max_rects ; i+=step){
+        for( int j = min_rects ; j < max_rects ; j+=step){
             results_file<<i<<","<<j;
             for( int n = 0 ; n < n_tries ; n++){
                 generate_rects(i, rectsA);
@@ -97,7 +98,7 @@ int main(int argc, char **argv){
         }
     }
     results_file.close();
-    printf("File %s saved\n",argv[4]);
+    printf("File %s saved\n",filename.c_str());
     return 0;
     
 }
