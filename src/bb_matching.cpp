@@ -6,6 +6,8 @@
 #include "geometry_utils.h"
 #include <ctime>
 #include <chrono>
+#include <iostream>
+#include <fstream>
 
 int W = 620;
 int H = 480;
@@ -36,12 +38,22 @@ void generate_rects(int N, std::vector <eod::ExtendedObjectInfo> &rects){
 }
 
 int main(int argc, char **argv){
-    if( argc < 2){
-        printf("Wrong usage!\nUsage: ./bb_matching min_rects max_rects results\nExample: ./bb_matching 10 100 ../../data/bb_matching_100");
+    if( argc < 5){
+        printf("Wrong usage!\nUsage: ./bb_matching min_rects max_rects n_tries results\nExample: ./bb_matching 10 100 ../../data/bb_matching_100");
     }    
     int min_rects = std::atoi(argv[1]);
     int max_rects = std::atoi(argv[2]);    
+    int n_tries = std::atoi(argv[3]);
     int iou_threshold_d = 0.75;
+    
+    std::ofstream results_file;
+    results_file.open (argv[4]);
+    
+    results_file << "RectsA,RectsB";
+    for(int n = 0 ; n < n_tries ; n++)
+        results_file << ",time" <<n;
+    results_file<<"\n";
+    
     printf("Calculation started");
     
     std::srand(std::time(nullptr));
@@ -50,33 +62,38 @@ int main(int argc, char **argv){
     std::vector<eod::ExtendedObjectInfo> rectsB;
     for( int i = min_rects ; i < max_rects ; i++){
         for( int j = min_rects ; j < max_rects ; j++){
-            generate_rects(i, rectsA);
-            generate_rects(j, rectsB);
-            
-            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();            
-            Mat_<double> closenessMapD = createClosenessMap(&rectsA, &rectsB, iou_threshold_d);
-            Mat mask(closenessMapD.size(), CV_8UC1, Scalar(255,255,255));            
-            //objects.clear();
-            while( true ){
-                double min, max = 0;
-                Point min_loc, max_loc;
-                minMaxLoc(closenessMapD, &min, &max, &min_loc, &max_loc, mask);
-                if( max == 0 ) break;                               
-                    
-                eod::ExtendedObjectInfo newone;                
-                newone = rectsA[max_loc.y] & rectsB[max_loc.x];   
-                                
-                //objects.push_back(newone); 
-                mask.row(max_loc.y).setTo(Scalar(0,0,0));                                    
-                mask.col(max_loc.x).setTo(Scalar(0,0,0));                                
+            results_file<<i<<","<<j;
+            for( int n = 0 ; n < n_tries ; n++){
+                generate_rects(i, rectsA);
+                generate_rects(j, rectsB);
+                
+                std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();            
+                Mat_<double> closenessMapD = createClosenessMap(&rectsA, &rectsB, iou_threshold_d);
+                Mat mask(closenessMapD.size(), CV_8UC1, Scalar(255,255,255));            
+                
+                while( true ){
+                    double min, max = 0;
+                    Point min_loc, max_loc;
+                    minMaxLoc(closenessMapD, &min, &max, &min_loc, &max_loc, mask);
+                    if( max == 0 ) break;                               
+                        
+                    eod::ExtendedObjectInfo newone;                
+                    newone = rectsA[max_loc.y] & rectsB[max_loc.x];   
+                                    
+                    mask.row(max_loc.y).setTo(Scalar(0,0,0));                                    
+                    mask.col(max_loc.x).setTo(Scalar(0,0,0));                                
+                }
+                mask.release();
+                closenessMapD.release();
+                std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+                double elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
+                printf("[%i, %i]: %f ms\n",i,j,elapsed_time);
+                results_file<<","<<elapsed_time;
             }
-            mask.release();
-            closenessMapD.release();
-            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-            double elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
-            printf("[%i, %i]: %f ms\n",i,j,elapsed_time);
-            
+            results_file<<"\n";
         }
     }
+    results_file.close();
+    return 0;
     
 }
