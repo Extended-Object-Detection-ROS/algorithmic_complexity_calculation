@@ -39,7 +39,8 @@ void generate_rects(int N, std::vector <eod::ExtendedObjectInfo> &rects){
 
 int main(int argc, char **argv){
     if( argc < 5){
-        printf("Wrong usage!\nUsage: ./bb_matching min_rects max_rects n_tries results\nExample: ./bb_matching 10 100 ../../data/bb_matching_100");
+        printf("Wrong usage!\nUsage: ./bb_matching min_rects max_rects n_tries path_to_results\nExample: ./bb_matching 10 100 5 ../../data/bb_matching_10_100.csv\n");
+        return -1;
     }    
     int min_rects = std::atoi(argv[1]);
     int max_rects = std::atoi(argv[2]);    
@@ -47,6 +48,7 @@ int main(int argc, char **argv){
     int iou_threshold_d = 0.75;
     
     std::ofstream results_file;
+    //std::string = argv[4]
     results_file.open (argv[4]);
     
     results_file << "RectsA,RectsB";
@@ -54,7 +56,7 @@ int main(int argc, char **argv){
         results_file << ",time" <<n;
     results_file<<"\n";
     
-    printf("Calculation started");
+    printf("Calculation started\n");
     
     std::srand(std::time(nullptr));
     
@@ -94,6 +96,7 @@ int main(int argc, char **argv){
         }
     }
     results_file.close();
+    printf("File %s saved\n",argv[4]);
     return 0;
     
 }
