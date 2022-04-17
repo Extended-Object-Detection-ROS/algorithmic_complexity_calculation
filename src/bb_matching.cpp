@@ -69,6 +69,7 @@ int main(int argc, char **argv){
                 generate_rects(i, rectsA);
                 generate_rects(j, rectsB);
                 
+                // part behind is refers to lib/types/SimpleObject.cpp/IdentifyHard
                 std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();            
                 Mat_<double> closenessMapD = createClosenessMap(&rectsA, &rectsB, iou_threshold_d);
                 Mat mask(closenessMapD.size(), CV_8UC1, Scalar(255,255,255));            
