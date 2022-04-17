@@ -1,0 +1,6 @@
+[submodule "src/lib"]
+	path = src/lib
+	url = https://github.com/Extended-Object-Detection-ROS/lib
+[submodule "src/tinyxml"]
+	path = src/tinyxml
+	url = https://github.com/Extended-Object-Detection-ROS/tinyxml
