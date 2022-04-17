@@ -1,0 +1,2 @@
+# algorithmic_complexity_calculation
+Experimental calculation of algorithmic complexity
