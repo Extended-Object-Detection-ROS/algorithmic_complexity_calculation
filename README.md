@@ -18,7 +18,7 @@ cd ..
 ### BB_matching
 1. Collect data
 ```
-./build/bb_matching 0 900 100 2 ../data/bb_matching_0_900.csv 
+./build/bb_matching 0 900 100 2 data/bb_matching_0_900.csv 
 ```
 2. Anylize data
 ```
