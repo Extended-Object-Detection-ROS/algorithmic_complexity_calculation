@@ -39,7 +39,7 @@ void generate_rects(int N, std::vector <eod::ExtendedObjectInfo> &rects){
 
 int main(int argc, char **argv){
     if( argc < 6){
-        printf("Wrong usage!\nUsage: ./bb_matching min_rects max_rects step n_tries path_to_results\nExample: ./bb_matching 10 100 5 ../../data/bb_matching_10_100.csv\n");
+        printf("Wrong usage!\nUsage: ./bb_matching min_rects max_rects step n_tries path_to_results\nExample: ./bb_matching 10 100 5 5 ../../data/bb_matching_10_100.csv\n");
         return -1;
     }    
     int min_rects = std::atoi(argv[1]);
